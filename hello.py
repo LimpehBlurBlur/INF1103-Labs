@@ -14,7 +14,7 @@ print("Username:", username)
 print("Bio:", bio)
 print("Follwers:", followers)
 
-#activity 3 (growth_tracker)
+#activity 3 "growth_tracker"
 
 followers = 100
 

@@ -1,6 +1,7 @@
 def load_inventory(session_list):
     filename='test.txt'
     inventory_list=[]
+    saved_qty=0
 
 
     try:
@@ -10,6 +11,9 @@ def load_inventory(session_list):
                 if line:
                     data = line.split(":")
                     inventory_list.append(data)
+                    data[2]=int(data[2])
+                    saved_qty+=data[2]
+        
                     
     except FileNotFoundError:
         #creates file if it does not exist
@@ -19,10 +23,21 @@ def load_inventory(session_list):
 
     if session_list:
         inventory_list.extend(session_list)
-        return inventory_list
-    else:
-        return inventory_list
+        return inventory_list,saved_qty
         
+    else:
+        return inventory_list,saved_qty
+
+def save_inventory(inventory_list):
+    filename="test.txt"
+    with open(filename, "w") as file:
+        for item_id, product, qty in inventory_list:
+            file.write(f"{item_id}:{product}:{qty}\n")
+    print("--------------------------------------------------------------\nENTRIES SAVED!")
+   
+
+
+
 def display_inventory(inventory_list):
     print("------------------------------\nCurrent inventory stock:")
 
@@ -45,10 +60,18 @@ def cache_list(last_id,item, quantity,session_list):
 
 def get_valid_input():
     #prompts user
-    item_input=input("-------------------\nInventory Counter\n-------------------\n*Type 'Quit' to end process\nEnter item name: ").strip();
-    quantity_input=input("Enter quantity: ").strip();
+    item_input=input("-------------------\nInventory Counter\n-------------------\n*Type 'Quit' to end process and save data\nEnter item name: ").strip();
+
     #check user typed quit
-    if item_input.lower()=="quit" or quantity_input.lower()=="quit":
+    if item_input.lower()=="quit":
+        check="shutdown"
+        f_attemmpt=0
+        return check ,f_attemmpt , 0 , None
+    
+    quantity_input=input("Enter quantity: ").strip();
+
+    #check if user typed quit when prompted for qty
+    if quantity_input.lower()=="quit" or quantity_input.lower()=="quit":
         check="shutdown"
         f_attemmpt=0
         return check ,f_attemmpt , 0 , None
@@ -77,10 +100,10 @@ def calculate_tax(inventory_quantity):
     return inventory_quantity *0.1
 
 def generate_report(total_fattempts, inventory_quantity,tax_amount):
-    print("-------------------\nTotal units processed:",inventory_quantity ,"\nTotal tax:" ,tax_amount,"\nTotal failed inputs:" ,total_fattempts)
+    print("--------------------------------------------------------------\nTotal units processed this session:",inventory_quantity ,"\nTotal tax enquired this session  :" ,tax_amount,"\nTotal failed inputs this session:" ,total_fattempts)
 
 
-######################################################################################################################################################################################################################################################################################################################
+##########################################################################SEPERATE MAIN FUNC FROM SUB FUNC############################################################################################################################################################################################################################################
 
 def main():
     #establish variables
@@ -93,7 +116,7 @@ def main():
     while True: 
 
         #load lists 
-        inventory_list=load_inventory(session_list) 
+        inventory_list,saved_qty=load_inventory(session_list) 
 
         #display lists 
         last_id=display_inventory(inventory_list)
@@ -108,22 +131,26 @@ def main():
         #if status from prev function = shutdown, user has typed quit. (is this considered hardcoded?)
         if status == "shutdown":
             generate_report(total_fattempts, inventory_quantity,tax_amount)
+            save_inventory(inventory_list)
             break
         #else if input is a valid nuber, it is proccessed
+
+
         elif quantity != 0:
              #save entries into the session list until program quits and save it
             last_id,session_list=cache_list(last_id,item, quantity,session_list)
+
             #calls the process function
             inventory_quantity = process_delivery(inventory_quantity, quantity)
+
             #calls the calculate tax function and add on the new amount to the existing
             tax_amount += calculate_tax(quantity)
             #rounds value to 2 dec place
             tax_amount=round(tax_amount,2)
 
             #check if inventory is above 500 , if it does still generate a report but end the code 
-            if inventory_quantity > 500:
-                generate_report(total_fattempts, inventory_quantity,tax_amount)
-                print("Total units exceeded 500, please reset!")
+            if inventory_quantity +saved_qty  > 500:
+                print("-------------------\nWARNING!\nTotal units exceeded 500, items entered not saved! Please try again!")
                 break
 
  

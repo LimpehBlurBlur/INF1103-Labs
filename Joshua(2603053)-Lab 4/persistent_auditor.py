@@ -1,4 +1,4 @@
-def load_inventory():
+def load_inventory(session_list):
     filename='test.txt'
     inventory_list=[]
 
@@ -15,26 +15,46 @@ def load_inventory():
         #creates file if it does not exist
         with open(filename, "w") as file:
             pass
+    
 
-    return inventory_list
+    if session_list:
+        inventory_list.extend(session_list)
+        return inventory_list
+    else:
+        return inventory_list
         
+def display_inventory(inventory_list):
+    print("------------------------------\nCurrent inventory stock:")
 
+    if inventory_list:
+        last_id = int(inventory_list[-1][0])
+        for item_id, product, qty in inventory_list:
+            print(f"{item_id} : {product} : {qty}")
+    else:
+        print("Inventory is currently empty...")
+        last_id= 0
+
+    return last_id
+    
+def cache_list(last_id,item, quantity,session_list):
+    last_id+=1
+    session_list.append([last_id, item,quantity])
+    return last_id,session_list
+    
 
 
 def get_valid_input():
     #prompts user
-    item_input=input("-------------------\nInventory Counter\n-------------------\n*Type 'Quit' to end process\nEnter quantity: ").strip();
-    quantity_input=input("-------------------\nInventory Counter\n-------------------\n*Type 'Quit' to end process\nEnter quantity: ").strip();
+    item_input=input("-------------------\nInventory Counter\n-------------------\n*Type 'Quit' to end process\nEnter item name: ").strip();
+    quantity_input=input("Enter quantity: ").strip();
     #check user typed quit
     if item_input.lower()=="quit" or quantity_input.lower()=="quit":
         check="shutdown"
-        #SAVE TO FILE
-        #save_inventory()
         f_attemmpt=0
         return check ,f_attemmpt , 0 , None
 
     #check if valid input
-    elif item_input.isdigit() != True:
+    elif quantity_input.isdigit() != True:
         print("Invalid input! Only integers!")
         check="continue"
         f_attemmpt= 1
@@ -51,6 +71,7 @@ def get_valid_input():
     #this process function just += the existing num and new num
 def process_delivery(current_total, new_value):
     return current_total+new_value
+
 #this x 0.1 (10%)
 def calculate_tax(inventory_quantity):
     return inventory_quantity *0.1
@@ -58,18 +79,30 @@ def calculate_tax(inventory_quantity):
 def generate_report(total_fattempts, inventory_quantity,tax_amount):
     print("-------------------\nTotal units processed:",inventory_quantity ,"\nTotal tax:" ,tax_amount,"\nTotal failed inputs:" ,total_fattempts)
 
+
+######################################################################################################################################################################################################################################################################################################################
+
 def main():
     #establish variables
     total_fattempts=0
     inventory_quantity=0
     tax_amount=0
+    session_list=[]
 
     #create a loop
     while True: 
-        inventory_list=load_inventory() 
-        print(inventory_list)
+
+        #load lists 
+        inventory_list=load_inventory(session_list) 
+
+        #display lists 
+        last_id=display_inventory(inventory_list)
+        
         #validates inputs and send results of validation
         status, f_attempts, quantity,item= get_valid_input()
+
+       
+
         total_fattempts+= f_attempts
 
         #if status from prev function = shutdown, user has typed quit. (is this considered hardcoded?)
@@ -78,6 +111,8 @@ def main():
             break
         #else if input is a valid nuber, it is proccessed
         elif quantity != 0:
+             #save entries into the session list until program quits and save it
+            last_id,session_list=cache_list(last_id,item, quantity,session_list)
             #calls the process function
             inventory_quantity = process_delivery(inventory_quantity, quantity)
             #calls the calculate tax function and add on the new amount to the existing

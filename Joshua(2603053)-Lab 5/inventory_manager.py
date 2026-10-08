@@ -21,7 +21,8 @@ def usermenu(current_inventory):
             display_inventory(current_inventory)
         case 2:
             add_data(current_inventory)
-
+        case 3:
+            update_data(current_inventory)
 
 
 def add_data(current_inventory):
@@ -44,7 +45,15 @@ def display_inventory(current_inventory):
     for x in current_inventory:
         print(x['id'], ":|", x['name'], "|x",x['product_qty'])
 
-
+def update_data(current_inventory):
+    display_inventory(current_inventory)
+    product_id=input("====================================\nEnter product ID:")
+    new_product_name=input("====================\nNew product name:")
+    new_product_qty=input("New product qty:")
+    target_product=int(product_id)-1
+    current_inventory[target_product]={"id":product_id, "name":new_product_name , "product_qty":new_product_qty}
+    json_write(current_inventory)
+    print("Product updated!")
 
 def load_data():
     try:

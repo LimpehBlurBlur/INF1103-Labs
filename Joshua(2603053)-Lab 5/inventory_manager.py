@@ -49,7 +49,7 @@ def add_data(current_inventory,failed_attempts):
         product_price=int(input("Product price (per item):"))
         total_qty = 0
         for x in current_inventory:
-            total_qty+=x["product_qty"] 
+            total_qty+=int(x["product_qty"]) 
         qty_check=total_qty+product_qty
 
         if product_name=="":
@@ -74,6 +74,7 @@ def add_data(current_inventory,failed_attempts):
     else:
         current_id=current_inventory[-1]["id"]
         print(current_id)
+        current_id=int(current_id)
 
     new_dict={"id": current_id+1, "name":product_name , "product_qty":product_qty ,"product_price":total_product_price }
     current_inventory.append(new_dict)
@@ -105,8 +106,8 @@ def update_data(current_inventory,failed_attempts):
         else:
             total_qty = 0
             for x in current_inventory:
-                total_qty+=x["product_qty"] 
-            qty_check=total_qty-current_inventory[product_id-1]["product_qty"]+new_product_qty
+                total_qty+=int(x["product_qty"])
+            qty_check=total_qty-int(current_inventory[product_id-1]["product_qty"])+new_product_qty
 
             if qty_check > 500 :
                 print("Quanity too much !!!")
@@ -134,7 +135,10 @@ def search_data(current_inventory,failed_attempts):
 
     for item in current_inventory:
         if item_id == item["id"]:
-            print(item)
+            print("ID:", current_inventory[item_id-1]["id"],
+                  "\nItem:", current_inventory[item_id-1]["name"],
+                  "\nQuantity:", current_inventory[item_id-1]["product_qty"],
+                  "\nPrice($):", current_inventory[item_id-1]["product_price"])
     return failed_attempts
 
 def del_data(current_inventory,failed_attempts):

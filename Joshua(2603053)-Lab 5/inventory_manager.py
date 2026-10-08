@@ -5,41 +5,69 @@ def usermenu(current_inventory,failed_attempts):
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" \
             "INVENTORY MANAGEMENT SYSTEM \n" \
             "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    next_action=int(input("\n==============Menu=================\n" \
-                            "1)DIsplay All Products\n" \
-                            "2)Add Products\n" \
-                            "3)Update Stock\n" \
-                            "4)Search Product\n" \
-                            "5)Delete Item\n" \
-                            "6)Save Session and quit"
-                            "n\=====================================" \
-                            "Enter Option:"))
+    try:
+        next_action=int(input("\n==============Menu=================\n" \
+                                "1)Display All Products\n" \
+                                "2)Add Products\n" \
+                                "3)Update Stock\n" \
+                                "4)Search Product\n" \
+                                "5)Delete Item\n" \
+                                "6)Save Session and quit"
+                                "\n=====================================" \
+                                "\nEnter Option:"))
+    except ValueError:
+        print("Invalid Input!!!!!")
+        failed_attempts += 1
+        return True,failed_attempts
+
     match next_action:
         case 1:
             display_inventory(current_inventory)
         case 2:
-            current_inventory=add_data(current_inventory)
+            current_inventory,failed_attempts=add_data(current_inventory,failed_attempts)
         case 3:
-            current_inventory=update_data(current_inventory)
+            current_inventory,failed_attempts=update_data(current_inventory,failed_attempts)
         case 4:
-            search_data(current_inventory)
+            failed_attempts=search_data(current_inventory,failed_attempts)
         case 5:
-            current_inventory=del_data(current_inventory)
+            current_inventory,failed_attempts=del_data(current_inventory,failed_attempts)
         case 6:
             save_inventory(current_inventory,failed_attempts)
-            return False
+            return False , failed_attempts
         case _:
             failed_attempts+= 1
             print("Invalid input, try again!!!")
-    return True
+    return True,failed_attempts
 
 
 
 
-def add_data(current_inventory):
-    product_name=input("====================\nProduct name:")
-    product_qty=int(input("Product qty:"))
-    product_price=int(input("Product price (per item):"))
+def add_data(current_inventory,failed_attempts):
+    try:
+        product_name=input("====================\nProduct name:").strip()
+        product_qty=int(input("Product qty:"))
+        product_price=int(input("Product price (per item):"))
+        total_qty = 0
+        for x in current_inventory:
+            total_qty+=x["product_qty"] 
+        qty_check=total_qty+product_qty
+
+        if product_name=="":
+            raise ValueError
+        elif product_qty < 0 or product_price < 0:
+            raise ValueError
+        elif qty_check > 500:
+            print("Total inventory exceeded 500!")
+            raise ValueError
+        
+    except ValueError:
+        print("Invalid Input!!!!!")
+        failed_attempts += 1
+        return current_inventory,failed_attempts
+   
+
+
+
     total_product_price=product_qty * product_price
     if len(current_inventory) ==0:
         current_id=0
@@ -49,43 +77,85 @@ def add_data(current_inventory):
 
     new_dict={"id": current_id+1, "name":product_name , "product_qty":product_qty ,"product_price":total_product_price }
     current_inventory.append(new_dict)
-    return current_inventory
+    return current_inventory,failed_attempts
     
 
 
 
 def display_inventory(current_inventory):
     for x in current_inventory:
-        print(x['id'], ":|", x['name'], "|x",x['product_qty'], "|",x['product_price'])
+        print("==========================================\nID:",x['id'], "\nItem:", x['name'], "\nQuantity:",x['product_qty'], "\nPrice($):",x['product_price'],"\n==========================================")
 
-def update_data(current_inventory):
+def update_data(current_inventory,failed_attempts):
     display_inventory(current_inventory)
-    product_id=int(input("====================================\nEnter product ID:"))
-    new_product_name=input("====================\nNew product name:")
-    new_product_qty=int(input("New product qty:"))
-    new_product_price=int(input("New Product price(per item):"))
+    try:
+        product_id=int(input("====================================\nEnter product ID:"))
+        new_product_name=input("====================\nNew product name:").strip()
+        new_product_qty=int(input("New product qty:"))
+        new_product_price=int(input("New Product price(per item):"))
+        
+        
+
+        if new_product_name=="":
+            raise ValueError
+        elif new_product_qty < 0 or new_product_price < 0 :
+            raise ValueError
+        elif product_id < 1 or product_id > len(current_inventory):
+            raise ValueError
+        else:
+            total_qty = 0
+            for x in current_inventory:
+                total_qty+=x["product_qty"] 
+            qty_check=total_qty-current_inventory[product_id-1]["product_qty"]+new_product_qty
+
+            if qty_check > 500 :
+                print("Quanity too much !!!")
+                raise ValueError
+        
+    except ValueError:
+        print("Invalid Input!!!!!")
+        failed_attempts += 1
+        return current_inventory,failed_attempts
+
+
     total_new_product_price=new_product_price*new_product_qty
     target_product=int(product_id)-1
     current_inventory[target_product]={"id":product_id, "name":new_product_name , "product_qty":new_product_qty,"product_price":total_new_product_price}
-    return current_inventory
+    return current_inventory,failed_attempts
 
 
-def search_data(current_inventory):
-    item_id=int(input("====================================\nEnter item ID:"))
+def search_data(current_inventory,failed_attempts):
+    try:
+        item_id=int(input("====================================\nEnter item ID:"))
+    except ValueError:
+        print("Invalid Input!!!!!")
+        failed_attempts += 1
+        return failed_attempts
+
     for item in current_inventory:
         if item_id == item["id"]:
             print(item)
+    return failed_attempts
 
-def del_data(current_inventory):
-    del_id=input("====================================\nEnter item ID to delete:")
-    target_id=int(del_id)-1
+def del_data(current_inventory,failed_attempts):
+    try:
+        del_id=int(input("====================================\nEnter item ID to delete:"))
+        target_id=del_id-1
+
+        if del_id < 1 or del_id > len(current_inventory):
+            raise ValueError
+    except ValueError:
+        print("Invalid Input!!!!!")
+        failed_attempts += 1
+        return current_inventory,failed_attempts
+
     del current_inventory[target_id]
 
     x=1
     for items in current_inventory:
         items['id'] =x
         x+=1
-    return current_inventory
+    return current_inventory,failed_attempts
     
 
 def save_inventory(current_inventory,failed_attempts):
@@ -125,9 +195,9 @@ def load_data():
 
 
 
-def json_write(current_inventory):
-    with open('database.json', 'w') as f:
-        json.dump(current_inventory,f)
+#ef json_write(current_inventory):
+#   with open('database.json', 'w') as f:
+#       json.dump(current_inventory,f)
 
 ##########################################################################SEPERATE MAIN FUNC FROM SUB FUNC############################################################################################################################################################################################################################################
 
@@ -139,7 +209,7 @@ def main():
     current_inventory=load_data()
     failed_attempts=0
     while True: 
-        continue_program=usermenu(current_inventory,failed_attempts)
+        continue_program,failed_attempts=usermenu(current_inventory,failed_attempts)
 
         if continue_program:
             pass

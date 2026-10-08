@@ -13,7 +13,7 @@ def usermenu(current_inventory):
                             "2)Add Products\n" \
                             "3)Update Stock\n" \
                             "4)Search Product\n" \
-                            "6)Delete Item\n" \
+                            "5)Delete Item\n" \
                             "=====================================\n" \
                             "Enter Option:"))
     match next_action:
@@ -25,6 +25,9 @@ def usermenu(current_inventory):
             update_data(current_inventory)
         case 4:
             search_data(current_inventory)
+        case 5:
+            del_data(current_inventory)
+
 
 
 def add_data(current_inventory):
@@ -63,6 +66,19 @@ def search_data(current_inventory):
     for item in current_inventory:
         if item_id == item["id"]:
             print(item)
+
+def del_data(current_inventory):
+    del_id=input("====================================\nEnter item ID to delete:")
+    target_id=int(del_id)-1
+    del current_inventory[target_id]
+
+    x=1
+    for items in current_inventory:
+        items['id'] =x
+        x+=1
+    json_write(current_inventory)
+    print("Item Deleted!")
+
 
 def load_data():
     try:

@@ -23,6 +23,8 @@ def usermenu(current_inventory):
             add_data(current_inventory)
         case 3:
             update_data(current_inventory)
+        case 4:
+            search_data(current_inventory)
 
 
 def add_data(current_inventory):
@@ -54,6 +56,13 @@ def update_data(current_inventory):
     current_inventory[target_product]={"id":product_id, "name":new_product_name , "product_qty":new_product_qty}
     json_write(current_inventory)
     print("Product updated!")
+
+
+def search_data(current_inventory):
+    item_id=int(input("====================================\nEnter item ID:"))
+    for item in current_inventory:
+        if item_id == item["id"]:
+            print(item)
 
 def load_data():
     try:

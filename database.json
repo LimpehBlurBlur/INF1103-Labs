@@ -1,1 +1,1 @@
-[{"id": 1, "name": "laptop", "product_qty": "1"}, {"id": 2, "name": "mouse", "product_qty": "1"}, {"id": 3, "name": "samsung note 67", "product_qty": "5"}, {"id": "4", "name": "Wallet", "product_qty": "3"}]
+[{"id": 1, "name": "Earpods", "product_qty": 5, "product_price": 300}, {"id": 2, "name": "Samsung Note 67", "product_qty": 1, "product_price": 1200}, {"id": 3, "name": "ASUS Laptop", "product_qty": 1, "product_price": 2000}]

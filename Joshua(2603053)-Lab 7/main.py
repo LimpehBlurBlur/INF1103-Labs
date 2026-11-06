@@ -2,6 +2,7 @@ import json
 from inventory import Inventory
 from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
+from can_be_shipped import CanBeShipped
 
 def load_data(inventory):
     try:
@@ -43,7 +44,7 @@ def main():
               "1) Display All Products\n"
               "2) Add Product\n"
               "3) Update Stock\n"
-              "4) Search Product\n"
+              "4) Search Product (And applicable shipping cost)\n"
               "5) Save Inventory\n"
               "6) Exit\n"
               "=====================================")
@@ -109,8 +110,11 @@ def main():
             case 4:
                 try:
                     item_id=int(input("====================================\nEnter item ID:"))
-                    if not inventory.search_product(item_id):
+                    product= inventory.search_product(item_id)
+                    if not product:
                         raise ValueError
+                    if isinstance(product, CanBeShipped):
+                        print("Shipping cost: $", product.calculate_shipping_cost())
                 except ValueError:
                     print("Invalid Input!!!!!")
                     failed_attempts += 1

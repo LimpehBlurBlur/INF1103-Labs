@@ -11,14 +11,14 @@ class Product(ABC):
         self.__supplier=supplier
 
 
-    def display_product(self):
+    def display_product(self) -> None:
         print("==========================================")
         print("ID:",self.__product_id)
         print("Item:",self.__name)
         print("Quantity:", self.__quantity)
         print("Price per item($):", self.__price)
 
-    def update_data(self,name,price,quantity):
+    def update_data(self, name: str, price: float, quantity: int) -> bool:
         if quantity < 0:
             print("Quantity cannot be negative!")
             return False
@@ -27,17 +27,17 @@ class Product(ABC):
         self.__quantity = quantity
         return True
 
-    def get_product_id(self):
+    def get_product_id(self)-> int:
         return self.__product_id
 
-    def get_quantity(self):
+    def get_quantity(self)-> int:
         return self.__quantity
 
-    def to_dict(self):
+    def to_dict(self)-> dict:
         return {"id": self.__product_id,"name":self.__name,"product_qty": self.__quantity, "product_price": self.__price}
 
     @abstractmethod
-    def get_fulfilment_info(self):
+    def get_fulfilment_info(self) -> str:
         pass
 
     def get_supplier(self) -> Supplier:

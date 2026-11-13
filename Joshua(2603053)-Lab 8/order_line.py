@@ -12,4 +12,4 @@ class OrderLine:
         return self.__product
 
     def display_line(self)->None:
-        print("Product ID:", self.__product.get_product_id(),"(", self.__product.get_name(),") x",self.__quantity, "=", self.calculate_subtotal())
+        print("Product Short UEN:", self.__product.get_product_id(),"(", self.__product.get_name(),") x",self.__quantity, "=", self.calculate_subtotal())

@@ -34,7 +34,7 @@ class Product(ABC):
         return self.__quantity
 
     def to_dict(self)-> dict:
-        return {"id": self.__product_id,"name":self.__name,"product_qty": self.__quantity, "product_price": self.__price}
+        return {"id": self.__product_id,"name":self.__name,"product_qty": self.__quantity, "product_price": self.__price,"supplier": self.__supplier.to_dict()}
 
     @abstractmethod
     def get_fulfilment_info(self) -> str:

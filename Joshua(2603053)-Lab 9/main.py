@@ -3,6 +3,9 @@ from inventory import Inventory
 from can_be_shipped import CanBeShipped
 from supplier import Supplier
 from product_factory import ProductFactory
+from order import Order
+from discount_strategy import NoDiscount, PercentageDiscount, BulkDiscount, StudentDiscount
+from utils import get_positive_float, load_products
 
 def load_data(inventory: Inventory)-> None:
     try:
@@ -21,7 +24,7 @@ def load_data(inventory: Inventory)-> None:
              inventory.add_product(product)
 
 
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
          print("Database not found, creating new one....")
          with open('database.json', "w") as file:
             current_inventory=[
@@ -49,7 +52,9 @@ def main():
               "3) Update Stock\n"
               "4) Search Product (And applicable shipping cost)\n"
               "5) Save Inventory\n"
-              "6) Exit\n"
+              "6) Create Customer Order\n"
+              "7) Receive new Stock Batch (from csv file)\n"
+              "8) Exit\n"
               "=====================================")
         try:
             next_action = int(input("Enter Option: "))
@@ -66,7 +71,7 @@ def main():
                 try:
                     product_name=input("====================\nProduct name:").strip()
                     product_qty=int(input("Product qty:"))
-                    product_price=float(input("Product price (per item):"))
+                    product_price = get_positive_float("Product price (per item):")
                     product_type=input("====================\nProduct type (physical/digital):").strip().lower()
                     supplier_id = input("Supplier Short UEN (etc 345A): ").strip().upper()
                     supplier_name = input("Supplier name: ").strip()
@@ -89,9 +94,10 @@ def main():
                             raise ValueError  
                     new_id = len(inventory.get_all_products()) + 1
                     product = ProductFactory.create(product_type, new_id, product_name, product_price, product_qty, supplier, extra)
+                    inventory.add_product(product)
                 
-                except ValueError:
-                        print("Invalid Input!!!!!")
+                except ValueError as error:
+                        print("Invalid Input!!!!!", error)
                         failed_attempts += 1
     
 
@@ -107,8 +113,8 @@ def main():
                         raise ValueError
                     product.update_data(new_product_name, new_product_price, new_product_qty)
 
-                except ValueError:
-                    print("Invalid Input!")
+                except ValueError as error:
+                    print("Invalid Input!", error)
                     failed_attempts += 1
                     continue
             case 4:
@@ -117,6 +123,7 @@ def main():
                     product= inventory.search_product(item_id)
                     if not product:
                         raise ValueError
+                    product.get_supplier().display_information()
                     if isinstance(product, CanBeShipped):
                         print("Shipping cost: $", product.calculate_shipping_cost())
                 except ValueError:
@@ -125,11 +132,51 @@ def main():
             case 5:
                 save_data(inventory)
             case 6:
+                print("Discount: 1) None  2) 10% off  3) $20 off $200+  4) Student 5%")
+                choice = input("Choose discount:").strip()
+                if choice == "2":
+                    discount = PercentageDiscount(10)
+                elif choice == "3":
+                    discount = BulkDiscount(200, 20)
+                elif choice == "4":
+                    discount = StudentDiscount()
+                elif choice == "1":
+                    discount = NoDiscount()
+                else:
+                    print ("No valid option chose, no dicount applied")
+                    discount = NoDiscount()
+
+                order = Order(1001, discount)
+                while True:
+                    text = input("Product ID to add (enter 'done' to end):").strip()
+                    if text == "done":
+                        break
+                    try:
+                        product = inventory.find_product(int(text))
+                        if product is None:
+                            print("Item not found!")
+                            continue
+                        order.add_order_line(product, int(input("Quantity:")))
+                    except ValueError as error:
+                        print("Invalid Input!", error)
+                order.display_order()
+
+            case 7:
+                supplier_id = input("Supplier UEN (e.g. 201912345A): ").strip().upper()
+                supplier_name = input("Supplier name: ").strip()
+                supplier_email = input("Supplier email: ").strip()
+                batch_supplier = Supplier(supplier_id, supplier_name, supplier_email)
+
+                load_products("products.csv", inventory, batch_supplier)
+                save_data(inventory)
+            case 8:
                 print("Total failed attempts this session:", failed_attempts)
                 break
+
             case _:
                 print("Invalid option!")
                 failed_attempts += 1
 
 
-main()
+if __name__ == "__main__":
+    main()

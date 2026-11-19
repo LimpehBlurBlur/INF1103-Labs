@@ -4,6 +4,7 @@ from supplier import Supplier
 
 class Product(ABC):
     def __init__(self,product_id:int ,name:str ,price:float ,quantity:int ,supplier: Supplier):
+        self.__validate(price, quantity)
         self.__product_id = product_id
         self.__name=name
         self.__price=price
@@ -17,11 +18,16 @@ class Product(ABC):
         print("Item:",self.__name)
         print("Quantity:", self.__quantity)
         print("Price per item($):", self.__price)
-
-    def update_data(self, name: str, price: float, quantity: int) -> bool:
+        
+    def __validate(self, price: float, quantity: int) -> None:
+        if price <= 0:
+            raise ValueError("Price must be greater than zero.")
         if quantity < 0:
-            print("Quantity cannot be negative!")
-            return False
+            raise ValueError("Stock quantity cannot be negative.")
+
+
+    def update_data(self, name: str, price: float, quantity: int) -> None:
+        self.__validate(price, quantity)
         self.__name=name
         self.__price=price
         self.__quantity = quantity

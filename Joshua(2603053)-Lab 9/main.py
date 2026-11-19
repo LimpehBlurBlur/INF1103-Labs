@@ -105,8 +105,7 @@ def main():
                     product = inventory.search_product(product_id)
                     if not product:
                         raise ValueError
-                    if not product.update_data(new_product_name,new_product_price,new_product_qty):
-                        raise ValueError
+                    product.update_data(new_product_name, new_product_price, new_product_qty)
 
                 except ValueError:
                     print("Invalid Input!")

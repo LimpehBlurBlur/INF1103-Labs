@@ -3,8 +3,8 @@ from can_be_shipped import CanBeShipped
 from supplier import Supplier
 
 class PhysicalProduct(Product, CanBeShipped):
-    def __init__(self, product_id:int , name:str , price:float , quantity:int, weight:float, suppplier: Supplier):
-        super().__init__(product_id, name, price, quantity, suppplier)
+    def __init__(self, product_id: int | str, name: str, price: float, quantity: int, weight: float, supplier: Supplier):
+        super().__init__(product_id, name, price, quantity, supplier)
         self.__weight = weight
 
     def display_product(self)-> None:

@@ -3,7 +3,7 @@ from supplier import Supplier
 
 
 class Product(ABC):
-    def __init__(self,product_id:int ,name:str ,price:float ,quantity:int ,supplier: Supplier):
+    def __init__(self, product_id: int | str, name: str, price: float, quantity: int, supplier: Supplier):
         self.__validate(price, quantity)
         self.__product_id = product_id
         self.__name=name
@@ -31,9 +31,9 @@ class Product(ABC):
         self.__name=name
         self.__price=price
         self.__quantity = quantity
-        return True
+    
 
-    def get_product_id(self)-> int:
+    def get_product_id(self)-> int | str :
         return self.__product_id
 
     def get_quantity(self)-> int:

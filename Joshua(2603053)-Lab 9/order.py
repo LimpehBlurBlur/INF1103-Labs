@@ -17,7 +17,7 @@ class Order:
         order_line=OrderLine(product,quantity)
         self.__order_lines.append(order_line)
 
-    def remove_order_line(self, product_id:int) -> bool:
+    def remove_order_line(self, product_id: int | str) -> bool:
         for line in self.__order_lines:
             if line.get_product().get_product_id()== product_id:
                 self.__order_lines.remove(line)

@@ -35,3 +35,5 @@ def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
                 except ValueError as error:
                     print(f"Skipped row {row}: {error}")
         print(f"{loaded} products loaded.")
+    finally:
+        print("Load attempt finished.")

@@ -1,1 +1,41 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "Desk Lamp",
+        "product_qty": 10,
+        "product_price": 25.0,
+        "supplier": {
+            "id": "123A",
+            "name": "test",
+            "email": "test@gmaol.com"
+        },
+        "type": "physical",
+        "weight": 0.0
+    },
+    {
+        "id": 2,
+        "name": "Photo Editor",
+        "product_qty": 100,
+        "product_price": 49.9,
+        "supplier": {
+            "id": "123A",
+            "name": "test",
+            "email": "test@gmaol.com"
+        },
+        "type": "digital",
+        "download_size": 0.0
+    },
+    {
+        "id": 3,
+        "name": "Monitor Stand",
+        "product_qty": 7,
+        "product_price": 39.5,
+        "supplier": {
+            "id": "123A",
+            "name": "test",
+            "email": "test@gmaol.com"
+        },
+        "type": "physical",
+        "weight": 0.0
+    }
+]

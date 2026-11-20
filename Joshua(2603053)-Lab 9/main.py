@@ -162,7 +162,7 @@ def main():
                 order.display_order()
 
             case 7:
-                supplier_id = input("Supplier UEN (e.g. 201912345A): ").strip().upper()
+                supplier_id = input("Supplier Short UEN (etc 345A): ").strip().upper()
                 supplier_name = input("Supplier name: ").strip()
                 supplier_email = input("Supplier email: ").strip()
                 batch_supplier = Supplier(supplier_id, supplier_name, supplier_email)

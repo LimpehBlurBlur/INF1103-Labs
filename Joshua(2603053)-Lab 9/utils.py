@@ -27,11 +27,13 @@ def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
             next(reader)                      
             for row in reader:
                 try:
-                    product_type, product_id, name, price, quantity = row
-                    product = ProductFactory.create(product_type, product_id, name,
+                    product_type, csv_id, name, price, quantity = row
+                    new_id = len(inventory.get_all_products()) + 1
+                    product = ProductFactory.create(product_type, new_id, name,
                                                     float(price), int(quantity), supplier)
                     inventory.add_product(product)
                     loaded += 1
+                    print(f"Added {name} (batch ID {csv_id}) as product ID {new_id}")
                 except ValueError as error:
                     print(f"Skipped row {row}: {error}")
         print(f"{loaded} products loaded.")
